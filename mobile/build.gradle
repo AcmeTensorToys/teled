@@ -19,11 +19,19 @@ android {
     }
 }
 
+// IOIO support
+dependencies {
+    compile 'com.github.ytai.ioio:IOIOLibAndroid:5.07'
+    compile 'com.github.ytai.ioio:IOIOLibAndroidBluetooth:5.07'
+    compile 'com.github.ytai.ioio:IOIOLibAndroidAccessory:5.07'
+    compile 'com.github.ytai.ioio:IOIOLibAndroidDevice:5.07'
+}
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     wearApp project(':wear')
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:23.1.1'
-    compile 'com.google.android.gms:play-services:8.4.0'
+    compile 'com.google.android.gms:play-services:+'
     compile 'com.android.support:design:23.1.1'
 }

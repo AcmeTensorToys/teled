@@ -1,5 +1,10 @@
 package com.acmetensortoys.android.teled;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.content.ComponentName;
+import android.os.IBinder;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -12,6 +17,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.util.Log;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -74,6 +80,20 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
+    private TeleDIOIOService tdis = null;
+    private final ServiceConnection tdisSC = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName cn, IBinder service) {
+            Log.d("Main", "TDIS conn");
+            tdis = ((TeleDIOIOService.LocalBinder) service).getService();
+        }
+        @Override
+        public void onServiceDisconnected(ComponentName cn) {
+            Log.d("Main", "TDIS discon");
+            tdis = null;
+        }
+    };
+
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -89,13 +109,35 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_manage) {
 
         } else if (id == R.id.nav_share) {
-
+            if(tdis != null) {
+                Log.d("Main", "Share w/ non-null...");
+                tdis.setForceFeedbackBehavior(true);
+            }
         } else if (id == R.id.nav_send) {
-
+            Intent i = new Intent(this, TeleDIOIOService.class);
+            Log.d("Main", "Send...");
+            startService(i);
+            bindService(i, tdisSC, Context.BIND_AUTO_CREATE);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    @Override
+    public void onDestroy(){
+        unbindService(tdisSC);
+        super.onDestroy();
+    }
 }
+
+/* TODO:
+ *
+ *  * A settings activity with SMS configuration, including authentication
+ *    information and an enable button.
+ *
+ *  * A settings activity with Bluetooth configuration and maybe USB?
+ *
+ *  * Spawn the IOIO service on startup if it isn't and see it work.
+ */

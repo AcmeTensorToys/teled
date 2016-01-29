@@ -1,0 +1,75 @@
+Service Design
+##############
+
+The TeleD IOIO management service is slave to several masters:
+
+   - The IOIO library and connectivity events
+   - Any messages sent its way via the UI or via SMS or...
+
+The IOIO library provides a pretty decent vocabulary of low-level behaviors
+in a relatively generic way.  The TeleD service should probably use a
+higher-level notion of behavior of specific components of the system;
+that is, it should know about the hardware at hand (or elsewhere) and
+expose only high-level directives.
+
+Failure cases are important to consider.  Right now, the policy is likely
+to be thus:
+
+  - If the IOIO goes away, all behaviors are cancelled and callbacks are
+    fired, informing whoever cares to know (SMS, UI, ...).  We cannot
+    shut down due to how Android works, thoug
+
+  - If a behavior times out, that behavior will be stopped (and again
+    callbacks will be fired?)
+
+Protocol Notes
+##############
+
+We should assume that SMS is high-latency and out-of-order.
+
+Every message should have an identifier at its top and be a series
+of commands which will be replied to in order (as a single message,
+after the whole thing has been executed?)
+
+That also means we should probably require that every command, other than those
+that quiesce some activity, have a duration of up to a minute or so? explicitly
+contained within them. (If you want longer commands, send many messages?)
+Let's see.... what do we want in the control stream?
+
+One answer, I suppose, is straightfoward on/off commands and some kind of readback::
+
+  PWM_SET <channel> <level> <duration if level != 0>
+  WAIT <duration>
+  READ_VAR <name>
+
+  PWM_OK ?
+  VAR_READ <value>
+
+Perhaps a little better, rather than something quite that simple, is an
+IOIO-Sequencer like approach, where we can send over a stream of motion
+commands at once, which are *enqueued*, with the head taking effect either
+immediately (and the rest of the queue being jettisoned) or are appended
+to the command queue. ::
+
+  SEQ_STALL <channel> <stall behavior>
+  SEQ_CMD <channel> <append?> {<level> <duration>}*
+  READ_VAR <name>
+
+  SEQ_OK ?
+  VAR_READ <name> <value>
+
+An answer I kind of like better is, of course, to borrow from the
+hyperbola-chiptunes project of years gone by and to have a notion of
+instruments / tracks / measures / scores with channels and conditionals.
+
+* Instruments are like (pre-loaded) sequencer command chains at
+  a fine level (they're like individual waveforms)
+
+* Tracks are like sequencer command chains at a coarser level
+  and reference instruments for their moment-to-moment behavior.
+  That is, a track is a sequence of instruments (and other data?)
+
+* Measures step several tracks in tandem.
+
+* Scores are a sequence of frames together with a channel-to-actuator
+  map and conditional control flow and some vague notion of interrupts...
