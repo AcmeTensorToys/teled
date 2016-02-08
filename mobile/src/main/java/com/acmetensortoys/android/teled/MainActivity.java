@@ -6,6 +6,7 @@ import android.content.ServiceConnection;
 import android.content.ComponentName;
 import android.os.IBinder;
 import android.os.Bundle;
+import android.renderscript.RSInvalidStateException;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.view.View;
@@ -46,6 +47,10 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        Intent i = new Intent(this, IOIOService.class);
+        startService(i);                                    // start the IOIO service
+        bindService(i, tdisSC, Context.BIND_AUTO_CREATE);   // and get a handle to it, eventually
     }
 
     @Override
@@ -80,17 +85,43 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    private TeleDIOIOService tdis = null;
+    private Thread blinker;
+    private void makeBlinker() {
+        blinker = tdis.makeBehaviorThread(IOIOBehaviors.makeBlinkLEDMany(500));
+        if(blinker != null) {
+            blinker.start();
+        } else {
+            Log.d("Main", "onReady unable to start blinker");
+        }
+    }
+
+    private IOIOService.LocalBinder tdis = null;
+    private IOIOService.OnReady tdisOnReady = new IOIOService.OnReady() {
+        public void onReady() {
+            Log.d("Main", "TDIS onReady");
+            if(blinker != null) {
+                throw new RSInvalidStateException("onReady with blinker");
+            }
+            makeBlinker();
+        }
+        public void onUnready() {
+            Log.d("Main", "TDIS onUnready");
+            blinker = null;
+        }
+    };
     private final ServiceConnection tdisSC = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName cn, IBinder service) {
             Log.d("Main", "TDIS conn");
-            tdis = ((TeleDIOIOService.LocalBinder) service).getService();
+            tdis = ((IOIOService.LocalBinder) service);
+            tdis.addOnReady(tdisOnReady);
         }
         @Override
         public void onServiceDisconnected(ComponentName cn) {
+            // Because we're binding to a local service, this should never happen to us
             Log.d("Main", "TDIS discon");
             tdis = null;
+            tdisOnReady.onUnready();
         }
     };
 
@@ -111,13 +142,15 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_share) {
             if(tdis != null) {
                 Log.d("Main", "Share w/ non-null...");
-                tdis.setForceFeedbackBehavior(true);
+                if(blinker == null) {
+                    makeBlinker();
+                } else {
+                    blinker.interrupt();
+                    blinker = null;
+                }
             }
         } else if (id == R.id.nav_send) {
-            Intent i = new Intent(this, TeleDIOIOService.class);
             Log.d("Main", "Send...");
-            startService(i);
-            bindService(i, tdisSC, Context.BIND_AUTO_CREATE);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
