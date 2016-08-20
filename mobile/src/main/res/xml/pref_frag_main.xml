@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <CheckBoxPreference
+        android:id="@+id/frag_pref_test"
+        android:key="test"
+        android:title="Test" />
+
+    <PreferenceCategory android:title="SMS">
+
+        <CheckBoxPreference
+            android:id="@+id/frag_pref_sms_ena"
+            android:key="sms_ena"
+            android:title="Enabled"
+            />
+
+        <PreferenceScreen
+            android:id="@+id/frag_pref_sms_pick"
+            android:key="sms_pick"
+            android:title="Pick contact">
+        </PreferenceScreen>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="Position Reporting">
+
+    <CheckBoxPreference
+        android:id="@+id/frag_pref_gps_ena"
+        android:key="gps_ena"
+        android:title="Enabled"
+        />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="IOIO">
+
+        <CheckBoxPreference
+            android:id="@+id/frag_pref_ioio_ena"
+            android:key="ioio_ena"
+            android:title="Enabled"
+            />
+
+        <!--
+        <ListPreference
+            android:id="@+id/frag_pref_ioio_mac"
+            android:key="ioio_mac"
+            android:title="Bluetooth MAC Address"
+            />
+            -->
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

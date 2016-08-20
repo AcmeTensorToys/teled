@@ -2,12 +2,18 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.acmetensortoys.android.teled">
 
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.SEND_SMS" />
-    <uses-permission android:name="android.permission.RECEIVE_SMS" />
-    <uses-permission android:name="android.permission.BLUETOOTH" />
-    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.BLUETOOTH" /> <!-- IOIO -->
 
+
+    <!-- <uses-permission android:name="android.permission.BODY_SENSORS" /> -->
+    <!-- <uses-permission android:name="android.permission.INTERNET" /> -->
+    <uses-permission android:name="android.permission.RECEIVE_SMS" /> <!-- SMSRecv -->
+    <uses-permission android:name="android.permission.SEND_SMS" /> <!--  -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+    <!-- <uses-permission android:name="android.permission.WAKE_LOCK" /> -->
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -15,25 +21,22 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
-            android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:name=".UI.MainActivity"
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
         <service
-            android:name=".IOIOService"
+            android:name=".Service.TeleDService"
             android:enabled="true" />
 
-        <service
-            android:name=".RemoteControlService"
-            android:enabled="true" />
-
+        <!--
         <receiver
-            android:name=".SMSRecv"
+            android:name=".Service.SMSRecv"
             android:enabled="true"
             android:exported="true"
             android:permission="android.permission.RECEIVE_SMS">
@@ -41,6 +44,11 @@
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
             </intent-filter>
         </receiver>
+        -->
+
+        <service
+            android:name=".Service.EphemeralTeleDService"
+            android:exported="false"></service>
     </application>
 
 </manifest>

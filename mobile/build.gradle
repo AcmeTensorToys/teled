@@ -2,11 +2,11 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.2"
+    buildToolsVersion "23.0.3"
 
     defaultConfig {
         applicationId "com.acmetensortoys.android.teled"
-        minSdkVersion 19
+        minSdkVersion 23
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
@@ -22,6 +22,14 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_7
         targetCompatibility JavaVersion.VERSION_1_7
     }
+
+    dataBinding { enabled = true }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    wearApp project(':wear')
+    testCompile 'junit:junit:4.12'
 }
 
 // IOIO support
@@ -32,11 +40,23 @@ dependencies {
     compile 'com.github.ytai.ioio:IOIOLibAndroidDevice:5.07'
 }
 
+// Functional java lets us not invent our own names for things that any
+// respectable language ought to have had from the start. ;)
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    wearApp project(':wear')
-    testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:23.1.1'
-    compile 'com.google.android.gms:play-services:+'
-    compile 'com.android.support:design:23.1.1'
+    compile 'org.functionaljava:functionaljava:4.5'
+    // compile 'org.functionaljava:functionaljava-java-core:4.5'
 }
+
+// Datastructures library
+dependencies {
+    compile group: 'com.google.guava', name: 'guava', version: '19.0'
+}
+
+// Additional Google-isms
+dependencies {
+    compile 'com.android.support:appcompat-v7:+'
+    compile 'com.android.support:design:+'
+    compile 'com.android.support:support-v4:23.+'
+    compile 'com.google.android.gms:play-services-location:9.0.2'
+}
+
