@@ -19,6 +19,7 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.ComponentName;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.CancellationSignal;
 import android.os.IBinder;
@@ -42,6 +43,8 @@ public class MainActivity extends Activity
 
     private final static int PERM_REQ_IX_RECV_SMS = 1;
     private final static int PERM_REQ_IX_FINE_LOC = 2;
+    private final static int PERM_REQ_IX_EVERYTHING = 3;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,6 +104,14 @@ public class MainActivity extends Activity
         super.onStart();
         bindService(new Intent(this, TeleDService.class), tdisSC,
                 Context.BIND_AUTO_CREATE | Context.BIND_ABOVE_CLIENT);
+
+        Log.d("Main", "Requesting permission?");
+        requestPermissions(
+                    new String[]{
+                            Manifest.permission.ACCESS_FINE_LOCATION,
+                            Manifest.permission.RECEIVE_SMS,
+                            Manifest.permission.SEND_SMS},
+                    PERM_REQ_IX_EVERYTHING);
     }
 
     @Override

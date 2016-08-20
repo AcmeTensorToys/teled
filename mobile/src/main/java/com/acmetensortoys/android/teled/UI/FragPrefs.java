@@ -1,8 +1,11 @@
 package com.acmetensortoys.android.teled.UI;
 
 import android.app.Activity;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
@@ -12,6 +15,7 @@ import android.provider.ContactsContract;
 import android.util.Log;
 
 import com.acmetensortoys.android.teled.R;
+import com.acmetensortoys.android.teled.Service.EphemeralTeleDService;
 
 public class FragPrefs
         extends PreferenceFragment {
@@ -36,7 +40,7 @@ public class FragPrefs
             public boolean onPreferenceClick(Preference _p) {
                 Intent conPik = new Intent(
                         Intent.ACTION_PICK,
-                        ContactsContract.Contacts.CONTENT_URI);
+                        ContactsContract.CommonDataKinds.Phone.CONTENT_URI);
                 startActivityForResult(conPik, REQID_SMS_PICK);
                 return true;
             }
@@ -56,10 +60,32 @@ public class FragPrefs
         */
     }
 
+    static final String[] phone_Uri_projection = { ContactsContract.CommonDataKinds.Phone.NUMBER };
+
     @Override
     public void onActivityResult(int req, int res, Intent i) {
         if(req == REQID_SMS_PICK && res == Activity.RESULT_OK) {
-            Log.d("FragPrefs", i.toString());
+            Log.d("FragPrefs", "SMS_PICK " + i.toString());
+
+            Cursor c = getActivity().getContentResolver()
+                    .query(i.getData(), phone_Uri_projection, null, null, null );
+            if (c != null) {
+                c.moveToFirst();
+                String number = c.getString(c.getColumnIndex(phone_Uri_projection[0]));
+                c.close();
+
+                Log.d("FragPrefs", " ... which is to say: " + number);
+
+                Uri x = Uri.fromParts("smsto", number, "");
+                PendingIntent pi = EphemeralTeleDService.pendingSendLocationSMS(getActivity(), x);
+                try {
+                    pi.send();
+                } catch (PendingIntent.CanceledException ce) {
+                    Log.d("FragPrefs", "... pi cancelled?");
+                }
+            } else {
+                Log.d("FragPrefs", " ... null cursor?");
+            }
         }
     }
 }

@@ -5,7 +5,7 @@ import android.content.Context;
 import android.location.LocationListener;
 import android.location.LocationManager;
 
-public abstract class PositionReporting
+public class PositionReporting
 {
     public PositionReporting(Context ctx, LocationListener ll) {
         LocationManager lm = (LocationManager) ctx.getSystemService(Context.LOCATION_SERVICE);

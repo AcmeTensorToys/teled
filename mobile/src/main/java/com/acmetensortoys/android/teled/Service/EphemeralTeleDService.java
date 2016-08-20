@@ -1,10 +1,14 @@
 package com.acmetensortoys.android.teled.Service;
 
+import android.Manifest;
 import android.app.IntentService;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.Context;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
+import android.telephony.SmsManager;
 import android.util.Log;
 
 /**
@@ -44,24 +48,27 @@ public class EphemeralTeleDService extends IntentService {
         if (intent != null) {
             final String action = intent.getAction();
             if (ACTION_TEST.equals(action)) {
-                Log.d("EphemeralTeleDService", "Test action: " + intent.toString() + " eb=" + intent.getExtras().toString());
+                Log.d("EphemeralTeleDService", "Test action: " + intent.toString());
+                if(intent.getExtras() != null) {
+                    Log.d("EphemeralTeleDService", " ... has extras=" + intent.getExtras().toString());
+                }
             } else if (ACTION_SEND_LOCATION_SMS.equals(action)) {
-                // final String param1 = intent.getStringExtra(EXTRA_PARAM1);
-                handleActionSendLocationSMS(intent);
+                Uri to = intent.getData();
+
+                LocationManager lm = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+                this.enforceCallingOrSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION,
+                    "Missing location permission");
+                Location l = lm.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
+
+                SmsManager sm = SmsManager.getDefault();
+                // XXX Hook send and delivery messages
+                sm.sendTextMessage(to.getSchemeSpecificPart(), null, "locn rep : " + l.toString(), null, null);
+
             } /* else if (ACTION_BAZ.equals(action)) {
                 final String param1 = intent.getStringExtra(EXTRA_PARAM1);
                 final String param2 = intent.getStringExtra(EXTRA_PARAM2);
                 handleActionBaz(param1, param2);
             } */
         }
-    }
-
-    /**
-     * Handle action Foo in the provided background thread with the provided
-     * parameters.
-     */
-    private void handleActionSendLocationSMS(Intent i) {
-        // TODO: Handle action Foo
-        throw new UnsupportedOperationException("Not yet implemented");
     }
 }
