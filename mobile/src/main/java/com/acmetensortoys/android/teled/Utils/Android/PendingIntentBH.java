@@ -51,7 +51,7 @@ public abstract class PendingIntentBH extends SuspendableBH<Void> {
     @Override
     public void suspend() {
         BehaviorState bs = ln.getLast();
-        switch(ln.getLast()) {
+        switch(bs) {
             case RUNNING:
                 this.onPause(pi);
                 // fallthru

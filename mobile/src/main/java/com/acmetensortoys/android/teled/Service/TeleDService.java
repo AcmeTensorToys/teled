@@ -33,7 +33,7 @@ import ioio.lib.util.android.IOIOAndroidApplicationHelper;
  */
 public class TeleDService extends Service {
     // Manage a collection of behaviors
-    private final BehaviorHandleSet<BehaviorHandle<?>> bhs = new BehaviorHandleSet();
+    private final BehaviorHandleSet<BehaviorHandle<?>> bhs = new BehaviorHandleSet<>();
 
     // Some behaviors pause and unpause on SMS preference or GPS preference (or both!)
     private final BehaviorHandleSet<SuspendableBH<?>> smsbhs = new BehaviorHandleSet<>();
