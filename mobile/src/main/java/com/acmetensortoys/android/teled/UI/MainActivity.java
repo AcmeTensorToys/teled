@@ -28,6 +28,7 @@ import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.renderscript.RSInvalidStateException;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.util.Log;
@@ -106,7 +107,7 @@ public class MainActivity extends Activity
                 Context.BIND_AUTO_CREATE | Context.BIND_ABOVE_CLIENT);
 
         Log.d("Main", "Requesting permission?");
-        requestPermissions(
+        ActivityCompat.requestPermissions(this,
                     new String[]{
                             Manifest.permission.ACCESS_FINE_LOCATION,
                             Manifest.permission.RECEIVE_SMS,
