@@ -17,3 +17,15 @@
 #}
 
 -dontobfuscate
+-dontwarn java.lang.*
+-dontwarn java.lang.invoke.*
+-dontwarn javax.annotation.*
+-dontwarn javax.annotation.concurrent.*
+-dontwarn sun.misc.Unsafe
+
+-dontwarn com.google.j2objc.*
+-dontwarn com.google.j2objc.annotations.*
+-dontwarn org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement
+
+-dontwarn com.google.common.escape.*
+-dontwarn com.android.future.usb.*
